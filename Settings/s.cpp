@@ -1,5 +1,5 @@
 #include "s.h"
-
+#include "separateclearfunc.h"
 S::S()
 {
     All_QString_PARAMS.insert("path/to/image", "E:/Qt project/EngWorld/Word/Internet Explorer_32.png");
@@ -9,7 +9,51 @@ S::S()
     All_QString_PARAMS.insert("RuTranslateTable", "Ru");
     All_QString_PARAMS.insert("exampleTable", "Example");
     readSettings();
+    CreateDBIfNotExist();
 }
+void S::CreateDBIfNotExist(){
+    QString transaction_name="create";
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",transaction_name);
+    db.setDatabaseName(All_QString_PARAMS["path/to/db"]);//Имя базы.
+    if (!db.open()){
+        GetErrorMessage(&db,transaction_name);
+        return;
+    };
+    QSqlQuery query(db);
+    QStringList sqls;
+    sqls<<"CREATE TABLE IF NOT EXISTS "+All_QString_PARAMS["EngWordTable"]+" ("
+          "id integer PRIMARY KEY autoincrement NOT NULL,"
+          "presentation text UNIQUE NOT NULL,"
+          "del_mark integer default 1 CHECK(del_mark =0 or del_mark =1) );"
+        <<"CREATE TABLE IF NOT EXISTS "+All_QString_PARAMS["EngTranslateTable"]+" ( "
+          "id integer PRIMARY KEY autoincrement NOT NULL,"
+          "presentation text NOT NULL,"
+          "parent integer REFERENCES word(id),"
+          "del_mark integer default 1 CHECK(del_mark =0 or del_mark =1) );"
+        <<"CREATE TABLE IF NOT EXISTS "+All_QString_PARAMS["RuTranslateTable"]+" ("
+          "id integer PRIMARY KEY autoincrement NOT NULL,"
+          "presentation text NOT NULL,"
+          "parent integer REFERENCES word(id),"
+          "del_mark integer default 1 CHECK(del_mark =0 or del_mark =1) );"
+        <<"CREATE TABLE IF NOT EXISTS "+All_QString_PARAMS["exampleTable"]+" ( "
+          "id integer PRIMARY KEY autoincrement NOT NULL,"
+          "presentation text NOT NULL,"
+          "parent integer REFERENCES word(id),"
+          "del_mark integer default 1 CHECK(del_mark =0 or del_mark =1) );";
+    for (int i=0;i!=sqls.length();++i){
+        QString next_sql=sqls[i];
+        if(!query.exec(next_sql)){
+            GetErrorMessage(nullptr,transaction_name,&query);
+            continue;
+        };
+        query.finish();
+    };
+    db.commit();
+    db.close();
+    db=QSqlDatabase();
+    QSqlDatabase::removeDatabase(transaction_name);
+}
+
 S * S::Settings(){
     static S *setting=new S();
     return setting;

@@ -1,38 +1,167 @@
 #include "mainwindow.h"
+#include "./Forms/formobject.h"
+#include "Settings/settings_gui.h"
+#include "./Forms/dynamiclist.h"
+#include "./Forms/mdi_dl.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    createAndFillmdiArea();
+
+    QMenuBar * mainMenu=new QMenuBar(this);
+    this->setMenuBar(mainMenu);
+
+    QMenu * AllDynamicList=new QMenu("All DynamicList",this);
+    QStringList tables;
+    QString wordTable=S::get("EngWordTable");
+    tables<<wordTable
+          <<S::get("EngTranslateTable")
+          <<S::get("RuTranslateTable")
+          <<S::get("exampleTable");
+    for(int mark=0;mark!=2;++mark){
+        QString mark_del=QString("").setNum(mark);
+        for(int i=0;i!=tables.length();++i){
+            QString name_act=(mark_del=="1"?"астивные":"помеченные на удаление");
+            QAction * act=AllDynamicList->addAction(tables[i]+" "+name_act,this,SLOT(action_Dynamic_EngTable()));
+            act->setData(tables[i]+"|"+mark_del);
+        }
+    }
+
+    mdiArea = new QMdiArea(this);
+    mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    //mdiArea->setViewMode(QMdiArea::TabbedView);
+    setCentralWidget(mdiArea);
+
+    QAction * act=mainMenu->addAction("Word",this,SLOT(action_Dynamic_EngTable()));
+    act->setData(wordTable+"|"+"1");
+
+    mainMenu->addAction("Settings",this,SLOT(action_Settings()));
+    mainMenu->addMenu(AllDynamicList);
+    //FormObject *widget=new FormObject(this,S::get("EngWordTable"));//добавление в таблицу word новое значение
+    //FormObject *widget=new FormObject(this,S::get("RuTranslateTable"),"","979");// добавление нового в другую таблицу
+
+    //FormObject *widget=new FormObject(this,S::get("RuTranslateTable"),"6");//  открытие
+    //FormObject *widget=new FormObject(this,S::get("EngWordTable"),"4");//  открытие
+
+//    DynamicList * widget=new DynamicList(this,S::get("EngWordTable"));
+//    this->setCentralWidget(widget);
+//
 }
 
 MainWindow::~MainWindow()
 {
 
 }
-void MainWindow::createAndFillmdiArea(){
-    mdiArea=new QMdiArea(this);
-    this->setCentralWidget(mdiArea);
-    mdiArea->setViewMode(QMdiArea::TabbedView);
 
-    QMenuBar * mainMenu=new QMenuBar(this);
-    this->setMenuBar(mainMenu);
-
-    mainMenu->addAction("Settings",this,SLOT(action_open_Settings()));
-}
-
-void MainWindow::action_open_Settings(){
+void MainWindow::OpenObject(QString id, QString table)
+{
+    QString title=table+":"+id;
     QList<QMdiSubWindow *>	allSub=mdiArea->subWindowList();
     for(auto x:allSub){
-        if(x->widget()->objectName()=="Settings"){
+        if(x->windowTitle()==title){
             x->close();
         };
     };
-    QMdiSubWindow *subWindow1 = new QMdiSubWindow(this);
-    Settings_gui* settings=new Settings_gui(this);
-    subWindow1->setWidget(settings);
-    subWindow1->setWindowTitle("Settings");
-    mdiArea->addSubWindow(subWindow1);
-    subWindow1->setAttribute(Qt::WA_DeleteOnClose);
-    subWindow1->show();
+    QMdiSubWindow *subWindow = new QMdiSubWindow(this);
+    subWindow->setWindowTitle(title);
+    //qDebug()<<table<<id;
+    FormObject *widget=new FormObject(this,table,id);
+    subWindow->setWidget(widget);
+    mdiArea->addSubWindow(subWindow);
+    subWindow->setAttribute(Qt::WA_DeleteOnClose);
+    subWindow->show();
+    if(table==S::get("EngWordTable")){
+        connect(widget, SIGNAL(needOpenDL(QString)), this, SLOT(needOpenDL(QString)));
+    }else{
+        connect(widget, SIGNAL(OpenObject(QString,QString)), this, SLOT(OpenObject(QString,QString)));
+    }
+}
+
+void MainWindow::action_Settings()
+{
+    QString title="Settings";
+    QList<QMdiSubWindow *>	allSub=mdiArea->subWindowList();
+    for(auto x:allSub){
+        if(x->windowTitle()==title){
+            x->close();
+        };
+    };
+    QMdiSubWindow *subWindow = new QMdiSubWindow(this);
+    subWindow->setWindowTitle(title);
+    Settings_gui * widget=new Settings_gui(this);
+    subWindow->setWidget(widget);
+    mdiArea->addSubWindow(subWindow);
+    subWindow->setAttribute(Qt::WA_DeleteOnClose);
+    subWindow->show();
+}
+
+void MainWindow::action_Dynamic_EngTable()
+{
+    QAction *act = qobject_cast<QAction *>(sender());
+    QString data=act->data().toString();
+    QStringList data_list=data.split("|");
+    QString table_name=data_list[0];
+    QString mark_del=data_list[1];
+
+    QString name_act=(mark_del=="1"?"астивные":"помеченные на удаление");
+    QString title=table_name+" "+name_act;
+
+
+    QList<QMdiSubWindow *>	allSub=mdiArea->subWindowList();
+    for(auto x:allSub){
+        if(x->windowTitle()==title){
+            x->close();
+        };
+    };
+    QMdiSubWindow *subWindow = new QMdiSubWindow(this);
+    subWindow->setWindowTitle(title);
+    DynamicList * widget=new DynamicList(this,table_name,mark_del);
+    subWindow->setWidget(widget);
+    mdiArea->addSubWindow(subWindow);
+    subWindow->setAttribute(Qt::WA_DeleteOnClose);
+    subWindow->show();
+
+    connect(widget, SIGNAL(OpenObject(QString, QString)), this, SLOT(OpenObject(QString, QString)));
+    connect(widget, SIGNAL(CreateObject(QString, QString)), this, SLOT(CreateObject(QString, QString)));
+}
+
+void MainWindow::CreateObject(QString table,QString parent_id)
+{
+    QString title;
+    FormObject *widget;
+    if(table==S::get("EngWordTable")){
+        widget=new FormObject(this,table);
+        title="Create new word";
+    }else{
+        widget=new FormObject(this,table,"",parent_id);
+        title="Create new "+table;
+    }
+    QMdiSubWindow *subWindow = new QMdiSubWindow(this);
+    subWindow->setWindowTitle(title);
+
+    subWindow->setWidget(widget);
+    mdiArea->addSubWindow(subWindow);
+    subWindow->setAttribute(Qt::WA_DeleteOnClose);
+    subWindow->show();
+}
+
+void MainWindow::needOpenDL(QString parent)
+{
+    QString title="Childrens "+parent;
+    QList<QMdiSubWindow *>	allSub=mdiArea->subWindowList();
+    for(auto x:allSub){
+        if(x->windowTitle()==title){
+            x->close();
+        };
+    };
+    QMdiSubWindow *subWindow = new QMdiSubWindow(this);
+    subWindow->setWindowTitle(title);
+    MDi_DL* widget=new MDi_DL(this,parent);
+    subWindow->setWidget(widget);
+    mdiArea->addSubWindow(subWindow);
+    subWindow->setAttribute(Qt::WA_DeleteOnClose);
+    subWindow->show();
+
+
 }

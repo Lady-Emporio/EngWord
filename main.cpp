@@ -1,13 +1,14 @@
 #include "mainwindow.h"
-#include "Settings/s.h"
+#include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     S::Settings();
-    a.setWindowIcon(QIcon(S::get("path/to/image")));
-    MainWindow w;
-    w.show();
-
+//    MainWindow w;
+//    w.show();
+    MainWindow *w=new MainWindow;
+    S::Settings()->MyGlobalApp=w;
+    w->show();
     return a.exec();
 }

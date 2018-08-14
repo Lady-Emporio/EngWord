@@ -1,0 +1,8 @@
+{
+    "EngTranslateTable": "Eng",
+    "EngWordTable": "Word",
+    "RuTranslateTable": "Ru",
+    "exampleTable": "Example",
+    "path/to/db": "MainDB.sqlite",
+    "path/to/image": "E:/Qt project/EngWorld/EngWord/release/Internet Explorer_32.png"
+}

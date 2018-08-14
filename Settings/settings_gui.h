@@ -1,7 +1,6 @@
 #ifndef SETTINGS_GUI_H
 #define SETTINGS_GUI_H
 
-#include "include.h"
 #include "Settings/s.h"
 class Settings_gui : public QWidget
 {

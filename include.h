@@ -52,4 +52,5 @@
 #include <QMdiSubWindow>
 #include <QTableWidget>
 #include <QSizePolicy>
+#include <QAction>
 #endif // INCLUDE_H

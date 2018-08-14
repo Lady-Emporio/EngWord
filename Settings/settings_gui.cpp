@@ -1,5 +1,5 @@
 #include "settings_gui.h"
-
+#include "./Forms/mdi_dl.h"
 Settings_gui::Settings_gui(QWidget *parent) : QWidget(parent)
 {
     this->setObjectName("Settings");
