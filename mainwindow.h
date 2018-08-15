@@ -4,7 +4,10 @@
 #include "include.h"
 #include "Settings/s.h"
 #include "Settings/settings_gui.h"
-
+#include "./Forms/formobject.h"
+#include "Settings/settings_gui.h"
+#include "./Forms/dynamiclist.h"
+#include "./Forms/mdi_dl.h"
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -19,6 +22,7 @@ public slots:
     void action_Dynamic_EngTable();
     void CreateObject(QString table,QString parent_id="");
     void needOpenDL(QString parent);
+    void OpenNowCreated(FormObject* needClose,QString table_name,QString id);
 };
 
 #endif // MAINWINDOW_H

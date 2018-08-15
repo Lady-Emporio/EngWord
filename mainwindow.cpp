@@ -1,8 +1,5 @@
 #include "mainwindow.h"
-#include "./Forms/formobject.h"
-#include "Settings/settings_gui.h"
-#include "./Forms/dynamiclist.h"
-#include "./Forms/mdi_dl.h"
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -65,7 +62,6 @@ void MainWindow::OpenObject(QString id, QString table)
     };
     QMdiSubWindow *subWindow = new QMdiSubWindow(this);
     subWindow->setWindowTitle(title);
-    //qDebug()<<table<<id;
     FormObject *widget=new FormObject(this,table,id);
     subWindow->setWidget(widget);
     mdiArea->addSubWindow(subWindow);
@@ -133,9 +129,11 @@ void MainWindow::CreateObject(QString table,QString parent_id)
     if(table==S::get("EngWordTable")){
         widget=new FormObject(this,table);
         title="Create new word";
+        connect(widget, SIGNAL(OpenNowCreated(FormObject*,QString,QString)), this, SLOT(OpenNowCreated(FormObject*,QString,QString)));
     }else{
         widget=new FormObject(this,table,"",parent_id);
         title="Create new "+table;
+        connect(widget, SIGNAL(OpenObject(QString,QString)), this, SLOT(OpenObject(QString,QString)));
     }
     QMdiSubWindow *subWindow = new QMdiSubWindow(this);
     subWindow->setWindowTitle(title);
@@ -163,5 +161,30 @@ void MainWindow::needOpenDL(QString parent)
     subWindow->setAttribute(Qt::WA_DeleteOnClose);
     subWindow->show();
 
+    subWindow->resize(300,200);
+}
 
+void MainWindow::OpenNowCreated(FormObject *needClose, QString table_name, QString id)
+{
+    QList<QMdiSubWindow *>	allSub=mdiArea->subWindowList();
+    QPoint pos;
+    for(auto x:allSub){
+        if(x->widget()==needClose){
+            pos=x->pos();
+            x->close();
+        };
+    };
+    QString title=table_name+":"+id;
+
+    QMdiSubWindow *subWindow = new QMdiSubWindow(this);
+    subWindow->setWindowTitle(title);
+    //qDebug()<<table<<id;
+    FormObject *widget=new FormObject(this,table_name,id);
+    subWindow->setWidget(widget);
+    mdiArea->addSubWindow(subWindow);
+    subWindow->setAttribute(Qt::WA_DeleteOnClose);
+    subWindow->show();
+
+    connect(widget, SIGNAL(needOpenDL(QString)), this, SLOT(needOpenDL(QString)));
+    subWindow->move(pos);
 }

@@ -18,6 +18,8 @@ class FormObject : public QWidget
     QPushButton *create;
     QPushButton *mark_delete;
     QPushButton *openAll;
+    bool addTodb();
+    bool getIdNotCreated(QString &id);
 public:
     explicit FormObject(QWidget *parent = 0,QString table_name="",QString id="",QString parent_id="");
     //Таблица обязательна
@@ -25,7 +27,7 @@ public:
     //parent только для создания
     QLabel * presentation;
     QLineEdit *edit;
-    QLabel * parent;
+    QLabel * parent_label;
     QPushButton *parent_buttons;
 public slots:
     void addNewToDB();
@@ -35,6 +37,7 @@ public slots:
 signals:
     void OpenObject(QString table,QString id);
     void needOpenDL(QString parent);
+    void OpenNowCreated(FormObject* its,QString table_name,QString id);
 };
 
 #endif // FORMOBJECT_H
