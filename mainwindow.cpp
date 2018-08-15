@@ -67,11 +67,13 @@ void MainWindow::OpenObject(QString id, QString table)
     mdiArea->addSubWindow(subWindow);
     subWindow->setAttribute(Qt::WA_DeleteOnClose);
     subWindow->show();
-    if(table==S::get("EngWordTable")){
-        connect(widget, SIGNAL(needOpenDL(QString)), this, SLOT(needOpenDL(QString)));
-    }else{
-        connect(widget, SIGNAL(OpenObject(QString,QString)), this, SLOT(OpenObject(QString,QString)));
-    }
+    connect(widget, SIGNAL(needOpenDL(QString,QString)), this, SLOT(needOpenDL(QString,QString)));
+    connect(widget, SIGNAL(OpenObject(QString,QString)), this, SLOT(OpenObject(QString,QString)));
+//    if(table==S::get("EngWordTable")){
+//        connect(widget, SIGNAL(needOpenDL(QString,QString)), this, SLOT(needOpenDL(QString,QString)));
+//    }else{
+//        connect(widget, SIGNAL(OpenObject(QString,QString)), this, SLOT(OpenObject(QString,QString)));
+//    }
 }
 
 void MainWindow::action_Settings()
@@ -144,7 +146,7 @@ void MainWindow::CreateObject(QString table,QString parent_id)
     subWindow->show();
 }
 
-void MainWindow::needOpenDL(QString parent)
+void MainWindow::needOpenDL(QString parent, QString table_name)
 {
     QString title="Childrens "+parent;
     QList<QMdiSubWindow *>	allSub=mdiArea->subWindowList();
@@ -153,15 +155,29 @@ void MainWindow::needOpenDL(QString parent)
             x->close();
         };
     };
-    QMdiSubWindow *subWindow = new QMdiSubWindow(this);
-    subWindow->setWindowTitle(title);
-    MDi_DL* widget=new MDi_DL(this,parent);
-    subWindow->setWidget(widget);
-    mdiArea->addSubWindow(subWindow);
-    subWindow->setAttribute(Qt::WA_DeleteOnClose);
-    subWindow->show();
 
-    subWindow->resize(300,200);
+    if(table_name==S::Settings()->All_QString_PARAMS["EngWordTable"]){
+        QMdiSubWindow *subWindow = new QMdiSubWindow(this);
+        subWindow->setWindowTitle(title);
+        DynamicList * widget=new DynamicList(this,S::Settings()->All_QString_PARAMS["EngTranslateTable"],"",parent);
+        subWindow->setWidget(widget);
+        mdiArea->addSubWindow(subWindow);
+        subWindow->setAttribute(Qt::WA_DeleteOnClose);
+        subWindow->show();
+
+        connect(widget, SIGNAL(OpenObject(QString, QString)),this, SLOT(OpenObject(QString, QString)));
+        connect(widget, SIGNAL(CreateObject(QString, QString)), this, SLOT(CreateObject(QString, QString)));
+    }else{
+        QMdiSubWindow *subWindow = new QMdiSubWindow(this);
+        subWindow->setWindowTitle(title);
+        MDi_DL* widget=new MDi_DL(this,parent,table_name);
+        subWindow->setWidget(widget);
+        mdiArea->addSubWindow(subWindow);
+        subWindow->setAttribute(Qt::WA_DeleteOnClose);
+        subWindow->show();
+
+        subWindow->resize(300,200);
+    }
 }
 
 void MainWindow::OpenNowCreated(FormObject *needClose, QString table_name, QString id)
@@ -185,6 +201,6 @@ void MainWindow::OpenNowCreated(FormObject *needClose, QString table_name, QStri
     subWindow->setAttribute(Qt::WA_DeleteOnClose);
     subWindow->show();
 
-    connect(widget, SIGNAL(needOpenDL(QString)), this, SLOT(needOpenDL(QString)));
+    connect(widget, SIGNAL(needOpenDL(QString,QString)), this, SLOT(needOpenDL(QString,QString)));
     subWindow->move(pos);
 }

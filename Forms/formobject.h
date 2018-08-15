@@ -2,7 +2,9 @@
 #define FORMOBJECT_H
 
 #include "include.h"
-
+#include "dynamiclist.h"
+#include "Settings/s.h"
+#include "separateclearfunc.h"
 class FormObject : public QWidget
 {
     Q_OBJECT
@@ -11,6 +13,7 @@ class FormObject : public QWidget
     QMap<QString,QString> This_settings;
     QString parent_id;
     QString parent_id_to_open;
+    QString parent_table;
     void makeDefaultGui();
     void openExist();
     void createNew();
@@ -36,7 +39,7 @@ public slots:
     void openParent();
 signals:
     void OpenObject(QString table,QString id);
-    void needOpenDL(QString parent);
+    void needOpenDL(QString parent,QString thisIsTable);
     void OpenNowCreated(FormObject* its,QString table_name,QString id);
 };
 

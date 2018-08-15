@@ -21,7 +21,7 @@ public slots:
     void action_Settings();
     void action_Dynamic_EngTable();
     void CreateObject(QString table,QString parent_id="");
-    void needOpenDL(QString parent);
+    void needOpenDL(QString parent,QString table_name);
     void OpenNowCreated(FormObject* needClose,QString table_name,QString id);
 };
 

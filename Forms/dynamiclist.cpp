@@ -4,6 +4,13 @@ DynamicList::DynamicList(QWidget *parent,QString table_name,QString mark_del,QSt
     : QWidget(parent),table_name(table_name),mark_del(mark_del),This_is_parents(This_is_parents)
 {
     This_settings=S::Settings()->All_QString_PARAMS;
+    if(table_name==This_settings["EngWordTable"]){
+        parent_table="";
+    }else if(table_name==This_settings["EngTranslateTable"]){
+        parent_table=table_name==This_settings["EngWordTable"];
+    }else if(table_name==This_settings["RuTranslateTable"] || table_name==This_settings["exampleTable"]){
+        parent_table=table_name==This_settings["EngTranslateTable"];
+    };
     makeGui();
     readFromDB();
 }
@@ -69,6 +76,7 @@ void DynamicList::create()
         QAction *act = qobject_cast<QAction *>(sender());
         QString table_name=act->data().toString();
         QString table=data[1];
+        qDebug()<< table_name<<id<<"wish create";
         emit CreateObject(table_name,id);
     }else{
         emit CreateObject(This_settings["EngWordTable"]);
@@ -80,21 +88,25 @@ void DynamicList::makeGui()
     QVBoxLayout * mainLayout=new QVBoxLayout(this);
     this->setLayout(mainLayout);
 
-    QStringList tables;
-    tables<<This_settings["EngWordTable"]
-          <<This_settings["EngTranslateTable"]
-          <<This_settings["RuTranslateTable"]
-          <<This_settings["exampleTable"];
 
     QMenuBar * mainMenu = new QMenuBar;
     if(table_name==This_settings["EngWordTable"]){
         QMenu * create=new QMenu("Create",this);
-        for(int i=0;i!=tables.length();++i){
-            QAction * act=create->addAction(tables[i],this,SLOT(create()));
-            act->setData(tables[i]);
-        };
+            QAction * act1=create->addAction(This_settings["EngWordTable"],this,SLOT(create()));
+            act1->setData(This_settings["EngWordTable"]);
+
+            QAction * act2=create->addAction(This_settings["EngTranslateTable"],this,SLOT(create()));
+            act2->setData(This_settings["EngTranslateTable"]);
         mainMenu->addMenu(create);
     }
+    else if(table_name==This_settings["EngTranslateTable"]){
+        QMenu * create=new QMenu("Create",this);
+        QAction * act1=create->addAction(This_settings["RuTranslateTable"],this,SLOT(create()));
+        act1->setData(This_settings["RuTranslateTable"]);
+        QAction * act2=create->addAction(This_settings["exampleTable"],this,SLOT(create()));
+        act2->setData(This_settings["exampleTable"]);
+        mainMenu->addMenu(create);
+    };
     QPushButton * refresh=new QPushButton("Refresh",this);
 
     mainLayout->setMenuBar(mainMenu);

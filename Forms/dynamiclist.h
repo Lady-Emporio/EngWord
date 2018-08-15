@@ -9,6 +9,7 @@ class DynamicList : public QWidget
     QString table_name;
     QString mark_del;
     QString This_is_parents;
+    QString parent_table;
     void makeGui();
     QMap<QString,QString> This_settings;
     QListWidget *dynamic_list;

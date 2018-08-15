@@ -1,10 +1,17 @@
 #include "formobject.h"
-#include "Settings/s.h"
-#include "separateclearfunc.h"
+
 FormObject::FormObject(QWidget *parent,QString table_name,QString id,QString parent_id)
     : QWidget(parent),table_name(table_name),id(id),parent_id(parent_id)
 {
     This_settings=S::Settings()->All_QString_PARAMS;
+    This_settings=S::Settings()->All_QString_PARAMS;
+    if(table_name==This_settings["EngWordTable"]){
+        parent_table="";
+    }else if(table_name==This_settings["EngTranslateTable"]){
+        parent_table=This_settings["EngWordTable"];
+    }else if(table_name==This_settings["RuTranslateTable"] || table_name==This_settings["exampleTable"]){
+        parent_table=This_settings["EngTranslateTable"];
+    };
     makeDefaultGui();
     if(id!=""){
         openExist();
@@ -13,12 +20,14 @@ FormObject::FormObject(QWidget *parent,QString table_name,QString id,QString par
     }
 }
 void FormObject::makeDefaultGui(){
+    QVBoxLayout  *mainLayout=new QVBoxLayout (this);
+    this->setLayout(mainLayout);
+
     presentation=new QLabel(this);
     edit=new QLineEdit(this);
     create=new QPushButton("Create",this);
     mark_delete=new QPushButton("Mark to delete",this);
-    QGridLayout  *mainLayout=new QGridLayout (this);
-    this->setLayout(mainLayout);
+
     parent_label=new QLabel("Parent",this);
     parent_buttons=new QPushButton(parent_id,this);
 
@@ -27,17 +36,32 @@ void FormObject::makeDefaultGui(){
 
     openAll=new QPushButton("open children lists",this);
     openAll->hide();
-    mainLayout->addWidget(openAll        ,0,0,1,4,Qt::AlignLeft);
 
-    mainLayout->addWidget(parent_label        ,0,0,1,2,Qt::AlignLeft);
-    mainLayout->addWidget(parent_buttons,0,3,1,2,Qt::AlignLeft);
-    mainLayout->addWidget(presentation  ,1,0,1,2,Qt::AlignLeft);
-    mainLayout->addWidget(edit          ,1,3,1,2,Qt::AlignLeft);
-    mainLayout->addWidget(create        ,2,0,1,3,Qt::AlignLeft);
-    mainLayout->addWidget(mark_delete   ,2,4,1,1,Qt::AlignLeft);
+    QHBoxLayout* mainHorLayout=new QHBoxLayout(this);
+    QVBoxLayout  *leftLayout=new QVBoxLayout (this);
+
+    mainHorLayout->addLayout(leftLayout);
+    QHBoxLayout* row1=new QHBoxLayout(this);
+    QHBoxLayout* row2=new QHBoxLayout(this);
+    QHBoxLayout* row3=new QHBoxLayout(this);
+    row1->addWidget(openAll);
+    row1->addWidget(parent_label);
+    row1->addWidget(parent_buttons);
+
+    row2->addWidget(presentation);
+    row2->addWidget(edit);
+
+    row3->addWidget(create);
+    row3->addWidget(mark_delete);
+
+    leftLayout->addLayout(row1);
+    leftLayout->addLayout(row2);
+    leftLayout->addLayout(row3);
+
+    mainLayout->addLayout(mainHorLayout);
     mainLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     create->setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding );
-
+    edit->setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding );
     connect(openAll, SIGNAL(clicked()), this, SLOT(openAllDLChildren()));
     connect(parent_buttons, SIGNAL(clicked()), this, SLOT(openParent()));
 }
@@ -49,6 +73,8 @@ void FormObject::openExist(){
     if (table_name==This_settings["EngWordTable"]){
         parent_buttons->hide();
         parent_label->hide();
+        openAll->show();
+    }else if(table_name==This_settings["EngTranslateTable"]){
         openAll->show();
     }
     connect(create, SIGNAL(clicked()), this, SLOT(UpdateToDB()));
@@ -213,14 +239,15 @@ void FormObject::UpdateToDB(){
 void FormObject::openAllDLChildren()
 {
     if(id!=""){
-        emit needOpenDL(id);
+        qDebug()<<id<<table_name<<"need parent child mdi";
+        emit needOpenDL(id,table_name);
     };
 }
 
 void FormObject::openParent()
 {
-    qDebug()<<parent_id_to_open<<"need open";
-    emit OpenObject(parent_id_to_open,This_settings["EngWordTable"]);
+    qDebug()<<parent_id_to_open<<parent_table<<"need parent open";
+    emit OpenObject(parent_id_to_open,parent_table);
 }
 
 
