@@ -8,6 +8,8 @@
 #include "Settings/settings_gui.h"
 #include "./Forms/dynamiclist.h"
 #include "./Forms/mdi_dl.h"
+#include "./Act/inputwrite.h"
+#include "./Act/selectword.h"
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -23,6 +25,8 @@ public slots:
     void CreateObject(QString table,QString parent_id="");
     void needOpenDL(QString parent,QString table_name);
     void OpenNowCreated(FormObject* needClose,QString table_name,QString id);
+    void action_SelectWord();
+    void action_InputWrite();
 };
 
 #endif // MAINWINDOW_H

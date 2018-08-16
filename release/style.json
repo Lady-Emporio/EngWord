@@ -1,8 +1,14 @@
 {
+    "Alphabet/path/": "E:/Qt project/TrySecondEngWord/NewEngWord/Sound/alphabet/",
     "EngTranslateTable": "Eng",
     "EngWordTable": "Word",
+    "Error/Click/Path/file.mp3": "E:/Qt project/TrySecondEngWord/NewEngWord/Sound/SoundEffect/VeryFastBoof.mp3",
     "RuTranslateTable": "Ru",
+    "TableToSelectWords": "SelectWord",
+    "Wrong/Click/Path/file.mp3": "E:/Qt project/TrySecondEngWord/NewEngWord/Sound/SoundEffect/GoodNeedDoFastVeryLong.mp3",
+    "dir/Word/": "E:/Qt project/TrySecondEngWord/NewEngWord/Sound/dirWord/",
     "exampleTable": "Example",
-    "path/to/db": "MainDB.sqlite",
-    "path/to/image": "E:/Qt project/EngWorld/EngWord/release/Internet Explorer_32.png"
+    "limitSelect(int)": "20",
+    "path/to/db.sqlite": "MainDB.sqlite",
+    "path/to/image/x.png": "./Internet Explorer_32.png"
 }

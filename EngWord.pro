@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui sql multimedia multimediawidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -18,7 +18,9 @@ SOURCES += main.cpp\
     Settings/settings_gui.cpp \
     Forms/formobject.cpp \
     Forms/dynamiclist.cpp \
-    Forms/mdi_dl.cpp
+    Forms/mdi_dl.cpp \
+    Act/selectword.cpp \
+    Act/inputwrite.cpp
 
 HEADERS  += mainwindow.h \
     include.h \
@@ -27,4 +29,6 @@ HEADERS  += mainwindow.h \
     separateclearfunc.h \
     Forms/formobject.h \
     Forms/dynamiclist.h \
-    Forms/mdi_dl.h
+    Forms/mdi_dl.h \
+    Act/selectword.h \
+    Act/inputwrite.h

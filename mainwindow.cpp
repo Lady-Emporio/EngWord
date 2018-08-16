@@ -33,8 +33,12 @@ MainWindow::MainWindow(QWidget *parent)
     QAction * act=mainMenu->addAction("Word",this,SLOT(action_Dynamic_EngTable()));
     act->setData(wordTable+"|"+"1");
 
+
+
     mainMenu->addAction("Settings",this,SLOT(action_Settings()));
     mainMenu->addMenu(AllDynamicList);
+    mainMenu->addAction("SelectWord",this,SLOT(action_SelectWord()));
+    mainMenu->addAction("InputWrite",this,SLOT(action_InputWrite()));
     //FormObject *widget=new FormObject(this,S::get("EngWordTable"));//добавление в таблицу word новое значение
     //FormObject *widget=new FormObject(this,S::get("RuTranslateTable"),"","979");// добавление нового в другую таблицу
 
@@ -203,4 +207,48 @@ void MainWindow::OpenNowCreated(FormObject *needClose, QString table_name, QStri
 
     connect(widget, SIGNAL(needOpenDL(QString,QString)), this, SLOT(needOpenDL(QString,QString)));
     subWindow->move(pos);
+}
+
+void MainWindow::action_SelectWord()
+{
+    QString title="SelectWord";
+    QList<QMdiSubWindow *>	allSub=mdiArea->subWindowList();
+    for(auto x:allSub){
+        if(x->windowTitle()==title){
+            x->close();
+        };
+    };
+    QMdiSubWindow *subWindow = new QMdiSubWindow(this);
+
+    subWindow->setWindowTitle(title);
+
+    SelectWord * widget=new SelectWord(this);
+    subWindow->setWidget(widget);
+    mdiArea->addSubWindow(subWindow);
+    subWindow->setAttribute(Qt::WA_DeleteOnClose);
+    subWindow->show();
+}
+
+void MainWindow::action_InputWrite()
+{
+    QString title="InputWrite";
+    QList<QMdiSubWindow *>	allSub=mdiArea->subWindowList();
+    for(auto x:allSub){
+        if(x->windowTitle()==title){
+            x->close();
+        };
+    };
+    QMdiSubWindow *subWindow = new QMdiSubWindow(this);
+
+    subWindow->setWindowTitle(title);
+
+    InputWrite *inputWrite=new InputWrite(this);
+
+    S::Settings()->InpWr=inputWrite;
+    inputWrite->startWithHook();
+
+    subWindow->setWidget(inputWrite);
+    mdiArea->addSubWindow(subWindow);
+    subWindow->setAttribute(Qt::WA_DeleteOnClose);
+    subWindow->show();
 }

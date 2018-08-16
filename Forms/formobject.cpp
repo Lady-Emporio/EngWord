@@ -19,6 +19,7 @@ FormObject::FormObject(QWidget *parent,QString table_name,QString id,QString par
         createNew();
     }
 }
+
 void FormObject::makeDefaultGui(){
     QVBoxLayout  *mainLayout=new QVBoxLayout (this);
     this->setLayout(mainLayout);
@@ -94,7 +95,7 @@ void FormObject::createNew(){
 void FormObject::readFromDB(){
     QString transaction_name="read";
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",transaction_name);
-    db.setDatabaseName(This_settings["path/to/db"]);//Имя базы.
+    db.setDatabaseName(This_settings["path/to/db.sqlite"]);//Имя базы.
     if (!db.open()){
         GetErrorMessage(&db,transaction_name);
         return;
@@ -138,7 +139,7 @@ bool FormObject::addTodb()
 {
     QString transaction_name="create";
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",transaction_name);
-    db.setDatabaseName(This_settings["path/to/db"]);//Имя базы.
+    db.setDatabaseName(This_settings["path/to/db.sqlite"]);//Имя базы.
     if (!db.open()){
         GetErrorMessage(&db,transaction_name);
         return false;
@@ -170,7 +171,7 @@ bool FormObject::getIdNotCreated(QString &id){
     QString UniquePresent=edit->text().toLower();
     QString transaction_name="read";
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",transaction_name);
-    db.setDatabaseName(This_settings["path/to/db"]);//Имя базы.
+    db.setDatabaseName(This_settings["path/to/db.sqlite"]);//Имя базы.
     if (!db.open()){
         GetErrorMessage(&db,transaction_name);
         return false;
@@ -214,7 +215,7 @@ void FormObject::UpdateToDB(){
 
     QString transaction_name="update";
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",transaction_name);
-    db.setDatabaseName(This_settings["path/to/db"]);//Имя базы.
+    db.setDatabaseName(This_settings["path/to/db.sqlite"]);//Имя базы.
     if (!db.open()){
         GetErrorMessage(&db,transaction_name);
         return;

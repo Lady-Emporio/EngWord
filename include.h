@@ -1,6 +1,7 @@
 #ifndef INCLUDE_H
 #define INCLUDE_H
-
+#include <QMediaPlayer>
+#include <QMediaPlaylist>
 #include <QWidget>
 #include <QMainWindow>
 #include <QApplication>

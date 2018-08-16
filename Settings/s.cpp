@@ -1,20 +1,26 @@
 #include "s.h"
-#include "separateclearfunc.h"
 S::S()
 {
-    All_QString_PARAMS.insert("path/to/image", "E:/Qt project/EngWorld/Word/Internet Explorer_32.png");
-    All_QString_PARAMS.insert("path/to/db", "MainDB.sqlite");
+    All_QString_PARAMS.insert("path/to/image/x.png", "E:/Qt project/EngWorld/Word/Internet Explorer_32.png");
+    All_QString_PARAMS.insert("path/to/db.sqlite", "MainDB.sqlite");
     All_QString_PARAMS.insert("EngWordTable", "Word");
     All_QString_PARAMS.insert("EngTranslateTable", "Eng");
     All_QString_PARAMS.insert("RuTranslateTable", "Ru");
     All_QString_PARAMS.insert("exampleTable", "Example");
+    All_QString_PARAMS.insert("TableToSelectWords", "SelectWord");
+    All_QString_PARAMS.insert("limitSelect(int)", "20");
+    All_QString_PARAMS.insert("Error/Click/Path/file.mp3", "E:/Qt project/TrySecondEngWord/NewEngWord/Sound/SoundEffect/VeryFastBoof.mp3");
+    All_QString_PARAMS.insert("Wrong/Click/Path/file.mp3", "E:/Qt project/TrySecondEngWord/NewEngWord/Sound/SoundEffect/GoodNeedDoFastVeryLong.mp3");
+    All_QString_PARAMS.insert("Alphabet/path/", "E:/Qt project/TrySecondEngWord/NewEngWord/Sound/alphabet/");
+    All_QString_PARAMS.insert("dir/Word/", "E:/Qt project/TrySecondEngWord/NewEngWord/Sound/dirWord/");
+
     readSettings();
     CreateDBIfNotExist();
 }
 void S::CreateDBIfNotExist(){
     QString transaction_name="create";
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",transaction_name);
-    db.setDatabaseName(All_QString_PARAMS["path/to/db"]);//Имя базы.
+    db.setDatabaseName(All_QString_PARAMS["path/to/db.sqlite"]);//Имя базы.
     if (!db.open()){
         GetErrorMessage(&db,transaction_name);
         return;

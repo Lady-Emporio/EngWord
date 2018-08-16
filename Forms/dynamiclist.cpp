@@ -21,7 +21,7 @@ void DynamicList::readFromDB()
 
     QString transaction_name="read_list";
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",transaction_name);
-    db.setDatabaseName(This_settings["path/to/db"]);//Имя базы.
+    db.setDatabaseName(This_settings["path/to/db.sqlite"]);//Имя базы.
     if (!db.open()){
         GetErrorMessage(&db,transaction_name);
         return;
